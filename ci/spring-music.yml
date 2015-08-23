@@ -7,6 +7,23 @@ resources:
     branch: master
     private_key: {{music_private_key}}
 
+- name: version
+  type: semver
+  source:
+    bucket: music-pipeline-artifacts
+    key: current-version
+    access_key_id: {{s3-access-key-id}}
+    secret_access_key: {{s3-secret-access-key}}
+    initial_version: 1.0.0
+
+- name: music-releases
+  type: s3
+  source:
+    bucket: music-pipeline-artifacts
+    regexp: spring-music-(.*).war
+    access_key_id: {{s3-access-key-id}}
+    secret_access_key: {{s3-secret-access-key}}
+
 jobs:
 - name: unit
   plan:
@@ -14,3 +31,18 @@ jobs:
     trigger: true
   - task: unit
     file: music-repo/ci/tasks/unit.yml
+
+- name: build-binary
+  serial: true
+  plan:
+  - get: music-repo
+    passed: [unit]
+    trigger: true
+  - get: version
+    params: {bump: minor, pre: rc}
+  - task: build-artifact
+    file: muisc-repo/ci/tasks/build-artifact.yml
+  - put: music-releases
+    params: {from: music-repo/build/libs/spring-music-.*.war}
+  - put: version
+    params: {file: version/number}
