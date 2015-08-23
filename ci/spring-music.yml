@@ -13,4 +13,4 @@ jobs:
   - get: music-repo
     trigger: true
   - task: unit
-    file: music-repo/ci/unit.yml
+    file: music-repo/ci/tasks/unit.yml
