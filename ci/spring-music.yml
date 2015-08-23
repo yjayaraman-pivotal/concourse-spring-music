@@ -1,0 +1,16 @@
+resources:
+- name: music-repo
+  type: git
+  source:
+    uri: git@github.com:datianshi/spring-music.git
+    #uri: https://github.com/datianshi/spring-music.git
+    branch: master
+    private_key: {{music_private_key}}
+
+jobs:
+- name: unit
+  plan:
+  - get: music-repo
+    trigger: true
+  - task: unit
+    file: music-repo/ci/unit.yml
