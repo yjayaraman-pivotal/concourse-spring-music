@@ -16,7 +16,7 @@ resources:
     secret_access_key: {{s3-secret-access-key}}
     initial_version: 1.0.0
 
-- name: music-releases
+- name: music-rc
   type: s3
   source:
     bucket: music-pipeline-artifacts
@@ -42,7 +42,7 @@ jobs:
     params: {bump: minor, pre: rc}
   - task: build-artifact
     file: music-repo/ci/tasks/build-artifact.yml
-  - put: music-releases
+  - put: music-rc
     params: {from: music-repo/build/libs/spring-music-.*.war}
   - put: version
     params: {file: version/number}
