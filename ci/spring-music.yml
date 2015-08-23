@@ -41,7 +41,7 @@ jobs:
   - get: version
     params: {bump: minor, pre: rc}
   - task: build-artifact
-    file: muisc-repo/ci/tasks/build-artifact.yml
+    file: music-repo/ci/tasks/build-artifact.yml
   - put: music-releases
     params: {from: music-repo/build/libs/spring-music-.*.war}
   - put: version
