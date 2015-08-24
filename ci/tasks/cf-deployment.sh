@@ -3,14 +3,14 @@ set -x
 
 target="cf api $API_ENDPOINT --skip-ssl-validation"
 #echo $target
-exec $target
+eval $target
 
 echo "Login....."
 login="cf auth $USERNAME $PASSWORD"
 #echo $login
-exec $login
+eval $login
 
 echo "push the app"
 push="cf push -n $HOST -p music-rc/spring-music.*.war"
 #echo $push
-exec $push
+eval $push
