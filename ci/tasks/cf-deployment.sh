@@ -10,6 +10,10 @@ login="cf auth $USERNAME $PASSWORD"
 #echo $login
 eval $login
 
+echo "Target Org and Space"
+org_space="cf target -o $ORG -s $SPACE"
+eval $org_space
+
 echo "push the app"
 push="cf push -n $HOST -p music-rc/spring-music.*.war"
 #echo $push
