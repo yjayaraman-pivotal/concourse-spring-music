@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image: docker:///datianshi/cf-cli
+
+inputs:
+  - name: music-repo
+  - name: music-rc
+
+run:
+  path: music-repo/ci/tasks/cf-deployment.sh
+
+params:
+  API_ENDPOINT:
+  USERNAME:
+  PASSWORD:
+  ORG:
+  SPACE:
+  HOST:

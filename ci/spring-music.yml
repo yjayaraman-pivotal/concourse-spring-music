@@ -46,3 +46,23 @@ jobs:
     params: {from: music-repo/build/libs/spring-music-.*.war}
   - put: version
     params: {file: version/number}
+
+- name: Deploy and Run Acceptance Tests
+  serial: true
+  plan:
+  - get: music-rc
+    passed: [build-binary]
+    trigger: true
+  - get: music-repo
+    passed: [build-binary]
+    trigger: true
+  - task: deploy-to-cats
+    file: music-repo/ci/tasks/cf-deployment.yml
+    config:
+      params:
+        API_ENDPOINT: api.10.65.233.228.xip.io
+        USERNAME:
+        PASSWORD:
+        ORG:
+        SPACE:
+        HOST:
