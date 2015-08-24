@@ -61,8 +61,8 @@ jobs:
     config:
       params:
         API_ENDPOINT: api.10.65.233.228.xip.io
-        USERNAME:
-        PASSWORD:
-        ORG:
-        SPACE:
-        HOST:
+        USERNAME: admin
+        PASSWORD: admin
+        ORG: test-org
+        SPACE: cats
+        HOST: music-cats

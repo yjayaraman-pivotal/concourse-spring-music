@@ -11,7 +11,7 @@ run:
   path: music-repo/ci/tasks/cf-deployment.sh
 
 params:
-  API_ENDPOINT:
+  API_ENDPOINT: 
   USERNAME:
   PASSWORD:
   ORG:
