@@ -23,6 +23,14 @@ resources:
     access_key_id: {{s3-access-key-id}}
     secret_access_key: {{s3-secret-access-key}}
 
+- name: music-final-release
+  type: s3
+  source:
+    bucket: music-release-artifacts
+    regexp: spring-music-(.*).war
+    access_key_id: {{s3-access-key-id}}
+    secret_access_key: {{s3-secret-access-key}}
+
 jobs:
 - name: unit
   plan:
@@ -98,6 +106,8 @@ jobs:
       passed: ["Promote to UAT"]
     - get: music-repo
       passed: ["Promote to UAT"]
+    - get: version
+      params: {bump: final}
   - task: deploy-to-prod
     file: music-repo/ci/tasks/cf-deployment.yml
     config:
@@ -108,3 +118,5 @@ jobs:
         ORG: test-org
         SPACE: prod
         HOST: music
+  - put: music-final-release
+    params: {from: music-rc-release/spring-music-.*.war}
