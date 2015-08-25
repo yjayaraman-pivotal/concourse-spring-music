@@ -5,7 +5,7 @@ image: docker:///datianshi/cf-cli
 
 inputs:
   - name: music-repo
-  - name: music-rc-release
+  - name: music-release
 
 run:
   path: music-repo/ci/tasks/cf-deployment.sh

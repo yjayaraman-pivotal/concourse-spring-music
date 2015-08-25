@@ -15,15 +15,15 @@ resources:
     secret_access_key: {{s3-secret-access-key}}
     initial_version: 1.0.0
 
-- name: music-rc-release
-  type: s3
-  source:
-    bucket: music-pipeline-artifacts
-    regexp: spring-music-(.*).war
-    access_key_id: {{s3-access-key-id}}
-    secret_access_key: {{s3-secret-access-key}}
+# - name: music-release
+#   type: s3
+#   source:
+#     bucket: music-pipeline-artifacts
+#     regexp: spring-music-(.*).war
+#     access_key_id: {{s3-access-key-id}}
+#     secret_access_key: {{s3-secret-access-key}}
 
-- name: music-final-release
+- name: music-release
   type: s3
   source:
     bucket: music-release-artifacts
@@ -46,10 +46,10 @@ jobs:
     passed: [unit]
     trigger: true
   - get: version
-    params: {bump: minor, pre: rc}
+    params: {bump: final}
   - task: build-artifact
     file: music-repo/ci/tasks/build-artifact.yml
-  - put: music-rc-release
+  - put: music-release
     params: {from: music-repo/build/libs/spring-music-.*.war}
   - put: version
     params: {file: version/number}
@@ -57,7 +57,7 @@ jobs:
 - name: cats
   plan:
   - aggregate:
-    - get: music-rc-release
+    - get: music-release
       passed: [build-binary]
       trigger: true
     - get: music-repo
@@ -82,7 +82,7 @@ jobs:
 - name: promote-to-uat
   plan:
   - aggregate:
-    - get: music-rc-release
+    - get: music-release
       passed: [cats]
       trigger: true
     - get: music-repo
@@ -100,10 +100,12 @@ jobs:
         HOST: music-uat
 
 - name: manual-deploy-to-prod
+  serial: true
   plan:
   - aggregate:
-    - get: music-rc-release
+    - get: music-release
       passed: [promote-to-uat]
+      trigger: true
     - get: music-repo
       passed: [promote-to-uat]
     - get: version
@@ -118,7 +120,6 @@ jobs:
         ORG: test-org
         SPACE: prod
         HOST: music
-  - put: music-final-release
-    params: {from: music-rc-release/spring-music-.*.war}
-  - put: version
-    params: {from: version/number}
+  - put: music-repo
+    params:
+      tag: version/number
