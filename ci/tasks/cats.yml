@@ -1,0 +1,13 @@
+---
+platform: linux
+
+image: docker:///datianshi/cf-cli
+
+inputs:
+  - name: music-repo
+
+run:
+  path: music-repo/ci/tasks/cats.sh
+
+params:
+  MUSIC_URL:

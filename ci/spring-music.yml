@@ -3,7 +3,6 @@ resources:
   type: git
   source:
     uri: git@github.com:datianshi/spring-music.git
-    #uri: https://github.com/datianshi/spring-music.git
     branch: master
     private_key: {{music_private_key}}
 
@@ -66,3 +65,8 @@ jobs:
         ORG: test-org
         SPACE: cats
         HOST: music-cats
+  - task: cats
+    file: music-repo/ci/tasks/cats.yml
+    config:
+      params:
+        MUSIC_URL: http://music-cats.10.65.233.228.xip.io
