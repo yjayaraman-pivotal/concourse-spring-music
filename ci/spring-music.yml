@@ -120,3 +120,5 @@ jobs:
         HOST: music
   - put: music-final-release
     params: {from: music-rc-release/spring-music-.*.war}
+  - put: version
+    params: {from: version/number}
