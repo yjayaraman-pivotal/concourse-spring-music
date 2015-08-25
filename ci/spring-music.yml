@@ -15,7 +15,7 @@ resources:
     secret_access_key: {{s3-secret-access-key}}
     initial_version: 1.0.0
 
-- name: music-rc
+- name: music-rc-release
   type: s3
   source:
     bucket: music-pipeline-artifacts
@@ -32,6 +32,7 @@ jobs:
     file: music-repo/ci/tasks/unit.yml
 
 - name: build-binary
+  serial: true
   plan:
   - get: music-repo
     passed: [unit]
@@ -40,7 +41,7 @@ jobs:
     params: {bump: minor, pre: rc}
   - task: build-artifact
     file: music-repo/ci/tasks/build-artifact.yml
-  - put: music-rc
+  - put: music-rc-release
     params: {from: music-repo/build/libs/spring-music-.*.war}
   - put: version
     params: {file: version/number}
@@ -48,7 +49,7 @@ jobs:
 - name: Deploy and Run Acceptance Tests
   plan:
   - aggregate:
-    - get: music-rc
+    - get: music-rc-release
       passed: [build-binary]
       trigger: true
     - get: music-repo
@@ -73,7 +74,7 @@ jobs:
 - name: Promote to UAT
   plan:
   - aggregate:
-    - get: music-rc
+    - get: music-rc-release
       passed: ["Deploy and Run Acceptance Tests"]
       trigger: true
     - get: music-repo
@@ -93,7 +94,7 @@ jobs:
 - name: Manual deploy to prod
   plan:
   - aggregate:
-    - get: music-rc
+    - get: music-rc-release
       passed: ["Promote to UAT"]
     - get: music-repo
       passed: ["Promote to UAT"]
