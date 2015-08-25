@@ -32,7 +32,6 @@ jobs:
     file: music-repo/ci/tasks/unit.yml
 
 - name: build-binary
-  serial: true
   plan:
   - get: music-repo
     passed: [unit]
@@ -47,14 +46,14 @@ jobs:
     params: {file: version/number}
 
 - name: Deploy and Run Acceptance Tests
-  serial: true
   plan:
-  - get: music-rc
-    passed: [build-binary]
-    trigger: true
-  - get: music-repo
-    passed: [build-binary]
-    trigger: true
+  - aggregate:
+    - get: music-rc
+      passed: [build-binary]
+      trigger: true
+    - get: music-repo
+      passed: [build-binary]
+      trigger: true
   - task: deploy-to-cats
     file: music-repo/ci/tasks/cf-deployment.yml
     config:
@@ -70,3 +69,41 @@ jobs:
     config:
       params:
         MUSIC_URL: http://music-cats.10.65.233.228.xip.io
+
+- name: Promote to UAT
+  plan:
+  - aggregate:
+    - get: music-rc
+      passed: ["Deploy and Run Acceptance Tests"]
+      trigger: true
+    - get: music-repo
+      passed: ["Deploy and Run Acceptance Tests"]
+      trigger: true
+  - task: deploy-to-uat
+    file: music-repo/ci/tasks/cf-deployment.yml
+    config:
+      params:
+        API_ENDPOINT: api.10.65.233.228.xip.io
+        USERNAME: admin
+        PASSWORD: admin
+        ORG: test-org
+        SPACE: uat
+        HOST: music-uat
+
+- name: Manual deploy to prod
+  plan:
+  - aggregate:
+    - get: music-rc
+      passed: ["Promote to UAT"]
+    - get: music-repo
+      passed: ["Promote to UAT"]
+  - task: deploy-to-prod
+    file: music-repo/ci/tasks/cf-deployment.yml
+    config:
+      params:
+        API_ENDPOINT: api.10.65.233.228.xip.io
+        USERNAME: admin
+        PASSWORD: admin
+        ORG: test-org
+        SPACE: prod
+        HOST: music
