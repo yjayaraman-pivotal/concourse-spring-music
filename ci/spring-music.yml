@@ -54,7 +54,7 @@ jobs:
   - put: version
     params: {file: version/number}
 
-- name: Deploy and Run Acceptance Tests
+- name: cats
   plan:
   - aggregate:
     - get: music-rc-release
@@ -79,14 +79,14 @@ jobs:
       params:
         MUSIC_URL: http://music-cats.10.65.233.228.xip.io
 
-- name: Promote to UAT
+- name: promote-to-uat
   plan:
   - aggregate:
     - get: music-rc-release
-      passed: ["Deploy and Run Acceptance Tests"]
+      passed: [cats]
       trigger: true
     - get: music-repo
-      passed: ["Deploy and Run Acceptance Tests"]
+      passed: [cats]
       trigger: true
   - task: deploy-to-uat
     file: music-repo/ci/tasks/cf-deployment.yml
@@ -99,13 +99,13 @@ jobs:
         SPACE: uat
         HOST: music-uat
 
-- name: Manual deploy to prod
+- name: manual-deploy-to-prod
   plan:
   - aggregate:
     - get: music-rc-release
-      passed: ["Promote to UAT"]
+      passed: [promote-to-uat]
     - get: music-repo
-      passed: ["Promote to UAT"]
+      passed: [promote-to-uat]
     - get: version
       params: {bump: final}
   - task: deploy-to-prod
