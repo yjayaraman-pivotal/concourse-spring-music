@@ -110,6 +110,7 @@ jobs:
       passed: [promote-to-uat]
     - get: version
       params: {bump: final}
+      passed: [build-binary]
   - task: deploy-to-prod
     file: music-repo/ci/tasks/cf-deployment.yml
     config:
