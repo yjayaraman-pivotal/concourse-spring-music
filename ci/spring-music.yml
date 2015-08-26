@@ -47,7 +47,8 @@ jobs:
     params: {from: music-repo/build/libs/spring-music-.*.war}
   - put: music-repo
     params:
-      tag: version/number    
+      repository: music-repo
+      tag: version/number
   - put: version
     params: {file: version/number}
 
