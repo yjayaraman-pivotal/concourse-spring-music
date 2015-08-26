@@ -41,8 +41,6 @@ jobs:
     params: {bump: final}
   - task: build-artifact
     file: music-repo/ci/tasks/build-artifact.yml
-  - task: push-tag
-    file: music-repo/ci/tasks/push-tag.yml
   - put: music-release
     params: {from: music-repo/build/libs/spring-music-.*.war}
   - put: music-repo
