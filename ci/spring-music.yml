@@ -18,7 +18,7 @@ resources:
 - name: music-release
   type: s3
   source:
-    bucket: music-release-artifacts
+    bucket: music-pipeline-artifacts
     regexp: spring-music-(.*).war
     access_key_id: {{s3-access-key-id}}
     secret_access_key: {{s3-secret-access-key}}
@@ -41,6 +41,7 @@ jobs:
     params: {bump: patch}
   - task: build-artifact
     file: music-repo/ci/tasks/build-artifact.yml
+    timeout: 5m
   - put: music-release
     params: {from: music-repo/build/libs/spring-music-.*.war}
   - put: music-repo
