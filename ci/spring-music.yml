@@ -50,7 +50,7 @@ jobs:
   - put: version
     params: {file: version/number}
 
-- name: cats
+- name: acceptance-tests
   plan:
   - aggregate:
     - get: music-release
@@ -79,10 +79,10 @@ jobs:
   plan:
   - aggregate:
     - get: music-release
-      passed: [cats]
+      passed: [acceptance-tests]
       trigger: true
     - get: music-repo
-      passed: [cats]
+      passed: [acceptance-tests]
       trigger: true
   - task: deploy-to-uat
     file: music-repo/ci/tasks/cf-deployment.yml
