@@ -38,7 +38,7 @@ jobs:
     passed: [unit]
     trigger: true
   - get: version
-    params: {bump: final}
+    params: {bump: patch}
   - task: build-artifact
     file: music-repo/ci/tasks/build-artifact.yml
   - put: music-release
