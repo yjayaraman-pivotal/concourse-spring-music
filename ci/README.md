@@ -9,20 +9,22 @@
 
 ## Resources
 
-* music-repo E.g. git@github.com:datianshi/spring-music.git
+Resources in concourse are implemented as docker images contains implementations corresponding their types
 
-* version (Application/spring music version): A file to track the version stored in s3. Content with E.g. 1.0.1
+* music-repo ([git-resource](https://github.com/concourse/git-resource)): A github repo. E.g. spring music github resource
 
-* music-release A bucket in s3 that stores spring-music artifact E.g. spring-music-1.0.1.war
+* version ([semver-resource](https://github.com/concourse/semver-resource)): A file to track the version stored in s3. E.g. 1.0.1 in a file named as current-version
 
-## Pipeline progress
+* music-release (([s3-resource](https://github.com/concourse/s3-resource))) A bucket in s3 that stores spring-music artifact E.g. spring-music-1.0.1.war
+
+## Pipeline Progress
 
 ### Check out from the music-repo
 
 ### Unit testing spring-music
 
 This step runs on a container with gradle and java installed.
-Basically it just run "gradle test" against the music-repo
+Basically it just runs "gradle test" against the music-repo
 
 ### Build Binary
 
@@ -31,7 +33,7 @@ Basically it just run "gradle test" against the music-repo
 * "gradle assemble" generates the war artifact
 * Push the artifact to the s3 resource as music-resource
 * Git tag on the music-repo
-* Bump the version resource for next usage
+* Bump the version resource for the next usage
 
 ### acceptance-tests
 
