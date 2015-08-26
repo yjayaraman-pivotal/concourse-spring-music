@@ -15,14 +15,6 @@ resources:
     secret_access_key: {{s3-secret-access-key}}
     initial_version: 1.0.0
 
-# - name: music-release
-#   type: s3
-#   source:
-#     bucket: music-pipeline-artifacts
-#     regexp: spring-music-(.*).war
-#     access_key_id: {{s3-access-key-id}}
-#     secret_access_key: {{s3-secret-access-key}}
-
 - name: music-release
   type: s3
   source:
@@ -49,8 +41,13 @@ jobs:
     params: {bump: final}
   - task: build-artifact
     file: music-repo/ci/tasks/build-artifact.yml
+  - task: push-tag
+    file: music-repo/ci/tasks/push-tag.yml
   - put: music-release
     params: {from: music-repo/build/libs/spring-music-.*.war}
+  - put: music-repo
+    params:
+      tag: version/number    
   - put: version
     params: {file: version/number}
 
@@ -108,9 +105,6 @@ jobs:
       trigger: true
     - get: music-repo
       passed: [promote-to-uat]
-    - get: version
-      params: {bump: final}
-      passed: [build-binary]
   - task: deploy-to-prod
     file: music-repo/ci/tasks/cf-deployment.yml
     config:
@@ -121,6 +115,3 @@ jobs:
         ORG: test-org
         SPACE: prod
         HOST: music
-  - put: music-repo
-    params:
-      tag: version/number

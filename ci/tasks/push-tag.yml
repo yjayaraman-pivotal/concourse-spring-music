@@ -1,0 +1,11 @@
+---
+platform: linux
+
+image: docker:///datianshi/gradle
+
+inputs:
+  - name: music-repo
+  - name: version
+
+run:
+  path: music-repo/ci/tasks/push-tag.sh
