@@ -102,7 +102,6 @@ jobs:
   - aggregate:
     - get: music-release
       passed: [promote-to-uat]
-      trigger: true
     - get: music-repo
       passed: [promote-to-uat]
   - task: deploy-to-prod
