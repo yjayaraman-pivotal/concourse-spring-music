@@ -3,13 +3,13 @@
 ![](images/pipeline.png)
 
 * [Concourse](http://councourse.ci)
-* Build only once
+* Build only once and deploy anywhere
 * Every build is a release candidate
 * Every build step runs inside a docker container mounting to garden linux cells
 
 ## Resources
 
-Resources in concourse are implemented as docker images contains implementations corresponding their types
+Resources in concourse are implemented as docker images which contain implementations corresponding their types
 
 * music-repo ([git-resource](https://github.com/concourse/git-resource)): A github repo. E.g. spring music github resource
 
@@ -52,3 +52,17 @@ Basically it just runs "gradle test" against the music-repo
 * Manually trigger the build when the operators are ready
 * Pull the binary from music-release
 * Deploy to prod
+
+### How to replicate this pipeline in your env
+
+* [ Install a concourse environment and fly cli ](http://concourse.ci/getting-started.html)
+
+* Fork this github repo to your own github account, [ generate the key pair and add the public key to github ](https://help.github.com/articles/generating-ssh-keys/), and save the private key for future usage.
+
+* Prepare a s3 bucket named as music-pipeline-artifacts
+
+* fly command line dance
+
+  * ```fly save-target --api https://example.com --username my-user
+--password my-password my-target```
+  * ```fly -t my-target configure --config spring-music.yml --var "music_private_key=$(cat PRIVATE_KEY_FOR_GITHUB)" --var s3-access-key-id=YOUR_S3_ACCESS_KEY_ID --var s3-secret-access-key=YOUR_S3_ACCESS_KEY --paused=false spring-music```

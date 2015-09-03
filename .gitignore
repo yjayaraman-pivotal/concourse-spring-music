@@ -3,6 +3,7 @@
 *.ids
 *.iws
 .idea/
+*.DS_Store
 
 .project
 .metadata
