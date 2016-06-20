@@ -100,3 +100,5 @@ Basically it just runs "gradle test" against the music-repo
   * `fly -t lite set-pipeline -p spring-music -c ci/spring-music.yml -l spring-music-pcfdev-credentials.yml`
   * `fly -t lite unpause-pipeline -p spring-music`
   * Open `http://192.168.100.4:8080` in your browser and enjoy!
+
+###  __FYI DO NOT COMMIT `spring-music-pcfdev-credentials.yml` as it has all your secrets__
