@@ -55,7 +55,7 @@ Basically it just runs "gradle test" against the music-repo
 
 ### How to replicate this pipeline in your env
 
-* If you don't already have a Concourse environment, you can quickly spin one up locally with [vagrant](https://concourse.ci/vagrant.html])
+* If you don't already have a Concourse environment, you can quickly spin one up locally with [Vagrant](https://concourse.ci/vagrant.html])
 
 * Download the `fly` CLI by visiting `http://192.168.100.4:8080` and selecting your OS then install
 
@@ -65,6 +65,14 @@ Basically it just runs "gradle test" against the music-repo
 * Prepare a s3 bucket named as `spring-music-YOURNAME`
   * Create folders `pipeline-artifacts` and `deployments` in the bucket
   * Create a file called `current-version` in the `pipeline-artifacts` folder and give it an initial content of `1.0.0`
+
+
+* Install PCF Dev ([Vagrant VM](https://pivotal.io/platform/pcf-tutorials/getting-started-with-pivotal-cloud-foundry-dev/introduction))
+ * Setup spaces for development, test, uat and production
+  * `cf create-space development`
+  * `cf create-space test`
+  * `cf create-space uat`
+  * `cf create-space production`
 
 
 * Set your fly endpoint (assuming you are taking the easy way and using vagrant)
