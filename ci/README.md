@@ -55,27 +55,48 @@ Basically it just runs "gradle test" against the music-repo
 
 ### How to replicate this pipeline in your env
 
-* [ Install a concourse environment and fly cli ](http://concourse.ci/getting-started.html)
+* If you don't already have a Concourse environment, you can quickly spin one up locally with [vagrant](https://concourse.ci/vagrant.html])
+
+* Download the `fly` CLI by visiting `http://192.168.100.4:8080` and selecting your OS then install
 
 * Fork this github repo to your own github account, [ generate the key pair and add the public key to github ](https://help.github.com/articles/generating-ssh-keys/), and save the private key for future usage.
 
-* Prepare a s3 bucket named as music-pipeline-artifacts
 
-* fly command line dance
+* Prepare a s3 bucket named as `spring-music-YOURNAME`
+  * Create folders `pipeline-artifacts` and `deployments` in the bucket
+  * Create a file called `current-version` in the `pipeline-artifacts` folder and give it an initial content of `1.0.0`
 
-  * ```fly save-target --api https://example.com --username my-user
---password my-password my-target```
 
-  * Configure the cloudfoundry target environment in [spring-music.yml](spring-music.yml)
+* Set your fly endpoint (assuming you are taking the easy way and using vagrant)
+
+  * `fly -t lite login -c http://192.168.100.4:8080`
+
+  * Configure your environment details in [spring-music-pcfdev-credentials.yml](spring-music-pcfdev-credentials.yml)
     E.g.
 
     ```
-    API_ENDPOINT: api.10.65.233.228.xip.io
-    USERNAME: admin
-    PASSWORD: admin
-    ORG: test-org
-    SPACE: prod
-    HOST: music
+    GIT_SPRING_MUSIC_REPO: git@github.com:REPLACE_ME/concourse-spring-music.git
+    GIT_BRANCH: master
+    CF_API: https://api.local.pcfdev.io
+    CF_USER: admin
+    CF_PASS: admin
+    CF_DEV_ORG: pcfdev-org
+    CF_DEV_SPACE: development
+    CF_TEST_ORG: pcfdev-org
+    CF_TEST_SPACE: test
+    CF_UAT_ORG: pcfdev-org
+    CF_UAT_SPACE: uat
+    CF_PROD_ORG: pcfdev-org
+    CF_PROD_SPACE: prod
+    S3_ACCESS_KEY_ID: REPLACE_ME
+    S3_SECRET_ACCESS_KEY: REPLACE_ME
+    S3_BUCKET: REPLACE_ME
+    MUSIC_PRIVATE_KEY: |
+      -----BEGIN RSA PRIVATE KEY-----
+      REPLACE_ME
+      -----END RSA PRIVATE KEY-----
     ```
-    
-  * ```fly -t my-target configure --config spring-music.yml --var "music_private_key=$(cat PRIVATE_KEY_FOR_GITHUB)" --var s3-access-key-id=YOUR_S3_ACCESS_KEY_ID --var s3-secret-access-key=YOUR_S3_ACCESS_KEY --paused=false spring-music```
+
+  * `fly -t lite set-pipeline -p spring-music -c ci/spring-music.yml -l spring-music-pcfdev-credentials.yml`
+  * `fly -t lite unpause-pipeline -p spring-music`
+  * Open `http://192.168.100.4:8080` in your browser and enjoy!

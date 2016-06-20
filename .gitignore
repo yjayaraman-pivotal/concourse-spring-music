@@ -19,3 +19,5 @@ target/
 build/
 
 *.log*
+
+spring-music-pcfdev-credentials.yml

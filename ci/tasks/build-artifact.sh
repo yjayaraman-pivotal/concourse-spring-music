@@ -7,3 +7,4 @@ cd music-repo
 #echo $version
 gradle assemble -PVersion=$version
 #ls build/libs/
+cp build/libs/*.war ../artifact-dir/

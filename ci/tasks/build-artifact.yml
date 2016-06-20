@@ -7,5 +7,8 @@ inputs:
   - name: music-repo
   - name: version
 
+outputs:
+  - name: artifact-dir
+
 run:
   path: music-repo/ci/tasks/build-artifact.sh

@@ -2,26 +2,66 @@ resources:
 - name: music-repo
   type: git
   source:
-    uri: git@github.com:datianshi/spring-music.git
-    branch: master
-    private_key: {{music_private_key}}
+    uri: {{GIT_SPRING_MUSIC_REPO}}
+    branch: {{GIT_BRANCH}}
+    private_key: {{MUSIC_PRIVATE_KEY}}
+
+- name: deploy-development-app
+  type: cf
+  source:
+    api: {{CF_API}}
+    username: {{CF_USER}}
+    password: {{CF_PASS}}
+    organization: {{CF_DEV_ORG}}
+    space: {{CF_DEV_SPACE}}
+    skip_cert_check: true
+
+- name: deploy-test-app
+  type: cf
+  source:
+    api: {{CF_API}}
+    username: {{CF_USER}}
+    password: {{CF_PASS}}
+    organization: {{CF_TEST_ORG}}
+    space: {{CF_TEST_SPACE}}
+    skip_cert_check: true
+
+- name: deploy-uat-app
+  type: cf
+  source:
+    api: {{CF_API}}
+    username: {{CF_USER}}
+    password: {{CF_PASS}}
+    organization: {{CF_UAT_ORG}}
+    space: {{CF_UAT_SPACE}}
+    skip_cert_check: true
+
+- name: deploy-production-app
+  type: cf
+  source:
+    api: {{CF_API}}
+    username: {{CF_USER}}
+    password: {{CF_PASS}}
+    organization: {{CF_PROD_ORG}}
+    space: {{CF_PROD_SPACE}}
+    skip_cert_check: true
 
 - name: version
   type: semver
   source:
-    bucket: music-pipeline-artifacts
-    key: current-version
-    access_key_id: {{s3-access-key-id}}
-    secret_access_key: {{s3-secret-access-key}}
+    bucket: {{S3_BUCKET}}
+    key: pipeline-artifacts/current-version
+    access_key_id: {{S3_ACCESS_KEY_ID}}
+    secret_access_key: {{S3_SECRET_ACCESS_KEY}}
     initial_version: 1.0.0
 
 - name: music-release
   type: s3
   source:
-    bucket: music-pipeline-artifacts
-    regexp: spring-music-(.*).war
-    access_key_id: {{s3-access-key-id}}
-    secret_access_key: {{s3-secret-access-key}}
+    bucket: {{S3_BUCKET}}
+    regexp: deployments/spring-music-(.*).war
+    access_key_id: {{S3_ACCESS_KEY_ID}}
+    secret_access_key: {{S3_SECRET_ACCESS_KEY}}
 
 jobs:
 - name: unit
@@ -43,13 +83,19 @@ jobs:
     file: music-repo/ci/tasks/build-artifact.yml
     timeout: 5m
   - put: music-release
-    params: {from: music-repo/build/libs/spring-music-.*.war}
+    params:
+      file: artifact-dir/spring-music-*.war
   - put: music-repo
     params:
       repository: music-repo
       tag: version/number
   - put: version
     params: {file: version/number}
+  - put: deploy-development-app
+    params:
+      manifest: music-repo/manifest-dev.yml
+      current_app_name: spring-music
+      path: music-release/spring-music-*.war
 
 - name: acceptance-tests
   plan:
@@ -60,21 +106,15 @@ jobs:
     - get: music-repo
       passed: [build-binary]
       trigger: true
-  - task: deploy-to-cats
-    file: music-repo/ci/tasks/cf-deployment.yml
-    config:
-      params:
-        API_ENDPOINT: api.10.65.233.228.xip.io
-        USERNAME: admin
-        PASSWORD: admin
-        ORG: test-org
-        SPACE: cats
-        HOST: music-cats
-  - task: cats
-    file: music-repo/ci/tasks/cats.yml
-    config:
-      params:
-        MUSIC_URL: http://music-cats.10.65.233.228.xip.io
+  - put: deploy-test-app
+    params:
+      manifest: music-repo/manifest-test.yml
+      current_app_name: spring-music
+      path: music-release/spring-music-*.war
+  - task: verify
+    file: music-repo/ci/tasks/verify-test.yml
+    params:
+      MUSIC_URL: http://spring-music-test.local.pcfdev.io
 
 - name: promote-to-uat
   plan:
@@ -85,16 +125,11 @@ jobs:
     - get: music-repo
       passed: [acceptance-tests]
       trigger: true
-  - task: deploy-to-uat
-    file: music-repo/ci/tasks/cf-deployment.yml
-    config:
-      params:
-        API_ENDPOINT: api.10.65.233.228.xip.io
-        USERNAME: admin
-        PASSWORD: admin
-        ORG: test-org
-        SPACE: uat
-        HOST: music-uat
+  - put: deploy-uat-app
+    params:
+      manifest: music-repo/manifest-uat.yml
+      current_app_name: spring-music
+      path: music-release/spring-music-*.war
 
 - name: manual-deploy-to-prod
   serial: true
@@ -104,13 +139,8 @@ jobs:
       passed: [promote-to-uat]
     - get: music-repo
       passed: [promote-to-uat]
-  - task: deploy-to-prod
-    file: music-repo/ci/tasks/cf-deployment.yml
-    config:
-      params:
-        API_ENDPOINT: api.10.65.233.228.xip.io
-        USERNAME: admin
-        PASSWORD: admin
-        ORG: test-org
-        SPACE: prod
-        HOST: music
+  - put: deploy-production-app
+    params:
+      manifest: music-repo/manifest-prod.yml
+      current_app_name: spring-music
+      path: music-release/spring-music-*.war
