@@ -67,7 +67,7 @@ Basically it just runs "gradle test" against the music-repo
   * Create a file called `current-version` in the `pipeline-artifacts` folder and give it an initial content of `1.0.0`
 
 
-* Install PCF Dev ([Vagrant VM](https://pivotal.io/platform/pcf-tutorials/getting-started-with-pivotal-cloud-foundry-dev/introduction))
+* Install PCF Dev ([Vagrant VM](http://pivotal.io/pcf-dev))
  * Setup spaces for development, test, uat and production
   * `cf create-space development`
   * `cf create-space test`
