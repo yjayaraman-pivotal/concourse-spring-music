@@ -6,14 +6,12 @@ jobs:
     - task: unit
       file: git-repo/ci/tasks/unit.yml
 
-  - name: build-jar
+  - name: build-artifact
     serial_groups: [version]
     serial: true
     plan:
     - get: git-repo
       passed: [unit-tests]
-      trigger: true
-    - get: trigger-build
       trigger: true
     - get: version
       params: { pre: rc }
@@ -22,7 +20,7 @@ jobs:
       timeout: 5m
     - put: release-candidate
       params:
-        file: artifact-dir/concourse-demo-*.jar
+        file: artifact-dir/spring-music*.war
     - put: git-repo
       params:
         repository: git-repo
@@ -35,17 +33,17 @@ jobs:
     plan:
     - aggregate:
       - get: version
-        passed: [build-jar]
+        passed: [build-artifact]
         trigger: true
       - get: release-candidate
-        passed: [build-jar]
+        passed: [build-artifact]
       - get: git-repo
-        passed: [build-jar]
+        passed: [build-artifact]
     - put: deploy-test-app
       params:
         manifest: git-repo/manifest-test.yml
-        current_app_name: concourse-demo
-        path: release-candidate/concourse-demo-*.jar
+        current_app_name: spring-music
+        path: release-candidate/spring-music*.war
     - task: verify
       file: git-repo/ci/tasks/verify-test.yml
       params:
@@ -65,8 +63,8 @@ jobs:
     - put: deploy-uat-app
       params:
         manifest: git-repo/manifest-uat.yml
-        current_app_name: concourse-demo
-        path: release-candidate/concourse-demo-*.jar
+        current_app_name: spring-music
+        path: release-candidate/spring-music*.war
 
   - name: ship-it
     serial_groups: [version]
@@ -84,15 +82,15 @@ jobs:
     - task: prepare-final
       file: git-repo/ci/tasks/prepare-final.yml
       params:
-        base_name: concourse-demo
+        base_name: spring-music
     - put: production-release
       params:
-        file: final-dir/concourse-demo-*.jar
+        file: final-dir/spring-music*.war
     - put: deploy-production-app
       params:
         manifest: git-repo/manifest-prod.yml
-        current_app_name: concourse-demo
-        path: final-dir/concourse-demo-*.jar
+        current_app_name: spring-music
+        path: final-dir/spring-music*.war
 
   - name: major
     serial_groups: [ version ]
@@ -166,7 +164,7 @@ resources:
   type: s3
   source:
     bucket: {{S3_BUCKET}}
-    regexp: pipeline-artifacts/concourse-demo-(.*).jar
+    regexp: pipeline-artifacts/spring-music-(.*).war
     access_key_id: {{S3_ACCESS_KEY_ID}}
     secret_access_key: {{S3_SECRET_ACCESS_KEY}}
 
@@ -174,7 +172,7 @@ resources:
   type: s3
   source:
     bucket: {{S3_BUCKET}}
-    regexp: deployments/concourse-demo-(.*).jar
+    regexp: deployments/spring-music-(.*).war
     access_key_id: {{S3_ACCESS_KEY_ID}}
     secret_access_key: {{S3_SECRET_ACCESS_KEY}}
 
