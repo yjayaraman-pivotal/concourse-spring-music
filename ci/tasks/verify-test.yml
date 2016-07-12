@@ -1,13 +1,18 @@
 ---
 platform: linux
 
-image: docker:///datianshi/cf-cli
+image_resource:
+  type: docker-image
+  source:
+    repository: brianbyers/concourse-cfcli
+    tag: "latest"
+
 
 inputs:
-  - name: music-repo
+  - name: git-repo
 
 run:
-  path: music-repo/ci/tasks/verify-test.sh
+  path: git-repo/ci/tasks/verify-test.sh
 
 params:
-  MUSIC_URL:
+  CONCOURSE_DEMO_URL:

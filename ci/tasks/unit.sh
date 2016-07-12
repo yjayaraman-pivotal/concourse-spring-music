@@ -2,6 +2,6 @@
 set -e
 
 export GRADLE_OPTS=-Dorg.gradle.native=false
-cd music-repo
+cd git-repo
 gradle -v
 gradle test

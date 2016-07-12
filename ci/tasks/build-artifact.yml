@@ -1,14 +1,19 @@
 ---
 platform: linux
 
-image: docker:///datianshi/gradle
+image_resource:
+  type: docker-image
+  source:
+    repository: brianbyers/concourse-gradle
+    tag: "latest"
+
 
 inputs:
-  - name: music-repo
+  - name: git-repo
   - name: version
 
 outputs:
   - name: artifact-dir
 
 run:
-  path: music-repo/ci/tasks/build-artifact.sh
+  path: git-repo/ci/tasks/build-artifact.sh
