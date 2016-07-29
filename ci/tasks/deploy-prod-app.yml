@@ -10,7 +10,7 @@ image_resource:
 inputs:
   - name: git-repo
   - name: version
-  - name: release-candidate
+  - name: final-dir
 
 run:
   path: git-repo/ci/tasks/deploy-app.sh
