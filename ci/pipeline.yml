@@ -118,7 +118,8 @@ resources:
   source:
     uri: {{GIT_REPO}}
     branch: master
-    ## commented out --- private_key: {{GIT_PRIVATE_KEY}}
+    private_key: {{GIT_PRIVATE_KEY}}
+    
 
 - name: deploy-test-app
   type: cf
@@ -162,15 +163,15 @@ resources:
 - name: release-candidate
   type: s3
   source:
-    bucket: {{S3_BUCKET}}
-    regexp: {{S3_PIPELINE_ARTIFACTS}}
+    bucket: {{S3_BUCKET_RC}}
+    regexp: {{S3_VERSION_FILE}}
     access_key_id: {{S3_ACCESS_KEY_ID}}
     secret_access_key: {{S3_SECRET_ACCESS_KEY}}
 
 - name: production-release
   type: s3
   source:
-    bucket: {{S3_BUCKET}}
-    regexp: {{S3_DEPLOYMENTS}}
+    bucket: {{S3_BUCKET_PROD}}
+    regexp: {{S3_VERSION_FILE}}
     access_key_id: {{S3_ACCESS_KEY_ID}}
     secret_access_key: {{S3_SECRET_ACCESS_KEY}}
