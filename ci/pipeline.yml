@@ -173,7 +173,7 @@ resources:
     key: {{S3_VERSION_FILE}}
     access_key_id: {{S3_ACCESS_KEY_ID}}
     secret_access_key: {{S3_SECRET_ACCESS_KEY}}
-    initial_version: 1.0.0
+    initial_version: {{INITIAL_VERSION}}
 
 - name: release-candidate
   type: s3
