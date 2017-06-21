@@ -95,6 +95,11 @@ jobs:
         manifest: git-repo/manifest-prod.yml
         current_app_name: spring-music
         path: final-dir/spring-music*.war
+    - put: deploy-azure-production-app
+      params:
+        manifest: git-repo/manifest-prod.yml
+        current_app_name: spring-music
+        path: final-dir/spring-music*.war
 
   - name: major
     serial_groups: [ version ]
@@ -164,6 +169,16 @@ resources:
     password: {{GCP_CF_PASS}}
     organization: {{GCP_CF_PROD_ORG}}
     space: {{GCP_CF_PROD_SPACE}}
+    skip_cert_check: true
+
+- name: deploy-azure-production-app
+  type: cf
+  source:
+    api: {{AZURE_CF_API}}
+    username: {{AZURE_CF_USER}}
+    password: {{AZURE_CF_PASS}}
+    organization: {{AZURE_CF_PROD_ORG}}
+    space: {{AZURE_CF_PROD_SPACE}}
     skip_cert_check: true
 
 - name: version
