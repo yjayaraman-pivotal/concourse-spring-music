@@ -4,4 +4,3 @@ applications:
   memory: 512M
   instances: 1
   host: yj-spring-music-test
-  buildpack: java_buildpack
