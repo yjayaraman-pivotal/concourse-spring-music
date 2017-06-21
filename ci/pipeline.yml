@@ -90,6 +90,11 @@ jobs:
         manifest: git-repo/manifest-prod.yml
         current_app_name: spring-music
         path: final-dir/spring-music*.war
+    - put: deploy-gcp-production-app
+      params:
+        manifest: git-repo/manifest-prod.yml
+        current_app_name: spring-music
+        path: final-dir/spring-music*.war
 
   - name: major
     serial_groups: [ version ]
@@ -149,6 +154,16 @@ resources:
     password: {{CF_PASS}}
     organization: {{CF_PROD_ORG}}
     space: {{CF_PROD_SPACE}}
+    skip_cert_check: true
+
+- name: deploy-gcp-production-app
+  type: cf
+  source:
+    api: {{GCP_CF_API}}
+    username: {{GCP_CF_USER}}
+    password: {{GCP_CF_PASS}}
+    organization: {{GCP_CF_PROD_ORG}}
+    space: {{GCP_CF_PROD_SPACE}}
     skip_cert_check: true
 
 - name: version
