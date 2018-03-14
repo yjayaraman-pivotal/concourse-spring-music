@@ -1,7 +1,7 @@
 ---
 applications:
 - name: spring-music-dev
-  memory: 512M
+  memory: 1G
   instances: 1
   host: yj-spring-music-dev
 
